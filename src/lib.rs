@@ -25,10 +25,34 @@ pub trait Num: Sub<Output = Self> + Not<Output = Self> + BitAnd<Output = Self> +
 	/// );
 	/// ```
 	fn one() -> Self;
-
-	// Note: we don't use `num_traits::identities::One` because it requires std::ops::Mul which we don't need.
 }
 
+#[cfg(not(feature = "num-traits"))]
+mod num_impl {
+	use crate::Num;
+	use std::ops::{BitAnd, Not, Sub};
+
+	macro_rules! impl_num {
+	($($t:ty),+) => {
+		$(
+		impl Num for $t { fn one() -> Self { 1 } }
+		)+
+	}
+}
+
+	impl_num!(u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize);
+
+	impl<T: Num> Num for std::num::Wrapping<T>
+	where
+		Self: Sub<Output = Self> + Not<Output = Self> + BitAnd<Output = Self>,
+	{
+		fn one() -> Self {
+			Self(T::one())
+		}
+	}
+}
+
+#[cfg(feature = "num-traits")]
 impl<T: num_traits::One + Sub<Output = Self> + Not<Output = Self> + BitAnd<Output = Self>> Num
 	for T
 {

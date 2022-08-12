@@ -43,3 +43,10 @@ fn f(data: &[u8]) {
 	}
 }
 ```
+
+# Features
+
+## num-traits
+
+This feature makes the library work on traits from the [`num-traits`](https://crates.io/crates/num-traits) crate.
+It is off by default.

@@ -6,7 +6,7 @@ homepage = "https://github.com/yehuthi/round_mult"
 repository = "https://github.com/yehuthi/round_mult"
 edition = "2021"
 license = "MIT OR Apache-2.0"
-categories = ["algorithms", "concurrency", "mathematics", "rust-patterns"]
+categories = ["algorithms", "concurrency", "mathematics", "rust-patterns", "no-std"]
 keywords = ["simd", "multiplier", "round", "rounding"]
 
 [dependencies]

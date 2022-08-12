@@ -1,6 +1,7 @@
 #![doc = include_str!("../README.md")]
+#![no_std]
 
-use std::ops::{Add, BitAnd, Not, Sub};
+use core::ops::{Add, BitAnd, Not, Sub};
 
 /// The trait for numbers in this library.
 ///
@@ -30,7 +31,7 @@ pub trait Num: Sub<Output = Self> + Not<Output = Self> + BitAnd<Output = Self> +
 #[cfg(not(feature = "num-traits"))]
 mod num_impl {
 	use crate::Num;
-	use std::ops::{BitAnd, Not, Sub};
+	use core::ops::{BitAnd, Not, Sub};
 
 	macro_rules! impl_num {
 	($($t:ty),+) => {
@@ -42,7 +43,7 @@ mod num_impl {
 
 	impl_num!(u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize);
 
-	impl<T: Num> Num for std::num::Wrapping<T>
+	impl<T: Num> Num for core::num::Wrapping<T>
 	where
 		Self: Sub<Output = Self> + Not<Output = Self> + BitAnd<Output = Self>,
 	{

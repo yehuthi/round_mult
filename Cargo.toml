@@ -1,7 +1,13 @@
 [package]
 name = "round_mult"
 version = "0.1.0"
+description = "A tiny library to round a number up or down to a multiplier."
+homepage = "https://github.com/yehuthi/round_mult"
+repository = "https://github.com/yehuthi/round_mult"
 edition = "2021"
+license = "MIT OR Apache-2.0"
+categories = ["algorithms", "concurrency", "mathematics", "rust-patterns"]
+keywords = ["simd", "multiplier", "round", "rounding"]
 
 [dependencies]
 num-traits = { version = "0.2.15", default-features = false, optional = true }

@@ -1,6 +1,6 @@
 # round_mult
 
-A tiny library to round up or down to a multiplier.
+A tiny library to round a number up or down to a multiplier.
 
 # Usage
 

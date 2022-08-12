@@ -1,7 +1,13 @@
 use std::ops::{BitAnd, Not, Sub};
 
+/// The trait for numbers in this library.
+///
+/// This allows the rounding functions to work with any primitive integer type.
 pub trait Num: Sub<Output = Self> + Not<Output = Self> + BitAnd<Output = Self> + Sized {
+	/// Returns the value for the number one in this type's representation.
 	fn one() -> Self;
+
+	// Note: we don't use `num_traits::identities::One` because it requires std::ops::Mul which we don't need.
 }
 
 impl<

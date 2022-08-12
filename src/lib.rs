@@ -5,6 +5,23 @@ use std::ops::{BitAnd, Not, Sub};
 /// This allows the rounding functions to work with any primitive integer type.
 pub trait Num: Sub<Output = Self> + Not<Output = Self> + BitAnd<Output = Self> + Sized {
 	/// Returns the value for the number one in this type's representation.
+	///
+	/// # Examples
+	/// ```
+	/// # use round_mult::Num;
+	/// assert_eq!(
+	///     <u8 as Num>::one(),
+	///    1u8
+	/// );
+	/// assert_eq!(
+	///     <i32 as Num>::one(),
+	///    1i32
+	/// );
+	/// assert_eq!(
+	///     <usize as Num>::one(),
+	///    1usize
+	/// );
+	/// ```
 	fn one() -> Self;
 
 	// Note: we don't use `num_traits::identities::One` because it requires std::ops::Mul which we don't need.

@@ -27,7 +27,7 @@ assert_eq!(
 
 The main motivation for this library is SIMD processing. Specifically when the length of data isn't a multiple of the SIMD lanes count, which means you will have a remainder of data to process without SIMD.
 
-```no_run
+```ignore
 fn f(data: &[u8]) {
 	type Simd = std::simd::u8x32; // or whichever
 

@@ -27,9 +27,8 @@ pub trait Num: Sub<Output = Self> + Not<Output = Self> + BitAnd<Output = Self> +
 	// Note: we don't use `num_traits::identities::One` because it requires std::ops::Mul which we don't need.
 }
 
-impl<
-		T: num_traits::One + Sub<Output = Self> + Not<Output = Self> + BitAnd<Output = Self> + Sized,
-	> Num for T
+impl<T: num_traits::One + Sub<Output = Self> + Not<Output = Self> + BitAnd<Output = Self>> Num
+	for T
 {
 	fn one() -> Self {
 		<T as num_traits::One>::one()

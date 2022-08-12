@@ -1,4 +1,4 @@
-# round_mult
+# round_mult [<img src="https://img.shields.io/crates/v/round_mult" align="right" />](https://crates.io/crates/round_mult) [<img src="https://img.shields.io/docsrs/round_mult" align="right" />](https://docs.rs/round_mult)
 
 A tiny library to round a number up or down to a multiplier.
 

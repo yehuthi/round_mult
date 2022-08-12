@@ -1,5 +1,6 @@
 #![doc = include_str!("../README.md")]
 #![no_std]
+#![deny(missing_docs)]
 
 use core::ops::{Add, BitAnd, Not, Sub};
 

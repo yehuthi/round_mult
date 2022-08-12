@@ -13,15 +13,15 @@ pub trait Num: Sub<Output = Self> + Not<Output = Self> + BitAnd<Output = Self> +
 	/// # use round_mult::Num;
 	/// assert_eq!(
 	///     <u8 as Num>::one(),
-	///    1u8
+	///     1u8
 	/// );
 	/// assert_eq!(
 	///     <i32 as Num>::one(),
-	///    1i32
+	///     1i32
 	/// );
 	/// assert_eq!(
 	///     <usize as Num>::one(),
-	///    1usize
+	///     1usize
 	/// );
 	/// ```
 	fn one() -> Self;

@@ -22,6 +22,7 @@ impl<
 ///     100
 /// );
 /// ```
+#[inline(always)]
 pub fn down<N: Num>(value: N, mult: N) -> N {
 	value & !(mult - N::one())
 }

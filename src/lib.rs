@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 use std::ops::{Add, BitAnd, Not, Sub};
 
 /// The trait for numbers in this library.

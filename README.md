@@ -40,6 +40,7 @@ fn f(data: &[u8]) {
 	}
 	while i < len {
 		// remainder process…
+		i += 1;
 	}
 }
 ```

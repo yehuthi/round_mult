@@ -129,14 +129,9 @@ mod test {
 	use quickcheck::TestResult;
 	use quickcheck_macros::quickcheck;
 
-	fn is_power_of_2(n: NonZeroUsize) -> bool {
-		let n = n.get();
-		n & (n - 1) == 0
-	}
-
 	#[quickcheck]
 	fn round_down_is_correct(value: usize, mult: NonZeroUsize) -> TestResult {
-		if !is_power_of_2(mult) {
+		if !mult.is_power_of_two() {
 			return TestResult::discard();
 		}
 		TestResult::from_bool(down(value, mult) == (value / mult) * mult.get())
@@ -144,7 +139,7 @@ mod test {
 
 	#[quickcheck]
 	fn round_up_is_correct(value: usize, mult: NonZeroUsize) -> TestResult {
-		if !is_power_of_2(mult) {
+		if !mult.is_power_of_two() {
 			return TestResult::discard();
 		}
 		TestResult::from_bool(up(value, mult) == ((value / mult) * mult.get()) + mult.get())

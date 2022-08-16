@@ -455,7 +455,6 @@ name = "round_mult"
 version = "0.1.0"
 dependencies = [
  "criterion",
- "num-traits",
  "quickcheck",
  "quickcheck_macros",
 ]

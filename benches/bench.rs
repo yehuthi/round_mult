@@ -1,4 +1,8 @@
+use std::num::NonZeroUsize;
+
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
+
+const MULT: NonZeroUsize = unsafe { NonZeroUsize::new_unchecked(10) };
 
 pub fn bench_round_down(c: &mut Criterion) {
 	fn naive_round_down(value: usize, mult: usize) -> usize {
@@ -9,13 +13,13 @@ pub fn bench_round_down(c: &mut Criterion) {
 
 	g.bench_function("round_mult", |b| {
 		b.iter(|| {
-			black_box(round_mult::down::<usize>(black_box(109), 10));
+			black_box(round_mult::down::<usize>(black_box(109), MULT));
 		});
 	});
 
 	g.bench_function("Naive", |b| {
 		b.iter(|| {
-			black_box(naive_round_down(black_box(109), 10));
+			black_box(naive_round_down(black_box(109), MULT.get()));
 		});
 	});
 
@@ -35,19 +39,19 @@ pub fn bench_round_up(c: &mut Criterion) {
 
 	g.bench_function("round_mult", |b| {
 		b.iter(|| {
-			black_box(round_mult::up::<usize>(black_box(109), 10));
+			black_box(round_mult::up::<usize>(black_box(109), MULT));
 		});
 	});
 
 	g.bench_function("Naive #1", |b| {
 		b.iter(|| {
-			black_box(naive_round_up_1(black_box(109), 10));
+			black_box(naive_round_up_1(black_box(109), MULT.get()));
 		});
 	});
 
 	g.bench_function("Naive #2", |b| {
 		b.iter(|| {
-			black_box(naive_round_up_2(black_box(109), 10));
+			black_box(naive_round_up_2(black_box(109), MULT.get()));
 		});
 	});
 

@@ -12,13 +12,15 @@ They both take a value and a multiplier and round the value down or up to the mu
 
 E.g.
 ```rust
+use std::num::NonZeroUsize;
+
 assert_eq!(
-    round_mult::down(109, 10),
+    round_mult::down(109usize, NonZeroUsize::new(10).unwrap()),
     100
 );
 
 assert_eq!(
-    round_mult::up(101, 10),
+    round_mult::up(101usize, NonZeroUsize::new(10).unwrap()),
     110
 );
 ```

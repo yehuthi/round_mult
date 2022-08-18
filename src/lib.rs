@@ -1,3 +1,5 @@
+#![no_std]
+
 mod nzp;
 pub use nzp::NonZeroPow2;
 
@@ -16,7 +18,7 @@ pub fn up<M: Multiplier>(value: M::Number, multiplier: M) -> Option<M::Number> {
 
 #[cfg(test)]
 mod test {
-	use std::num::NonZeroU8;
+	use core::num::NonZeroU8;
 
 	use super::*;
 	use quickcheck::TestResult;

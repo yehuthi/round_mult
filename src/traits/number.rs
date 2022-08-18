@@ -1,5 +1,5 @@
 pub(crate) mod private {
-	use std::ops::{Add, BitAnd, Not, Sub};
+	use core::ops::{Add, BitAnd, Not, Sub};
 
 	pub trait Number:
 		Copy

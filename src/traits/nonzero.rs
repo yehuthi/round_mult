@@ -1,7 +1,4 @@
-use core::num::{
-	NonZeroI128, NonZeroI16, NonZeroI32, NonZeroI64, NonZeroI8, NonZeroIsize, NonZeroU128,
-	NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU8, NonZeroUsize,
-};
+use core::num::{NonZeroU128, NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU8, NonZeroUsize};
 
 pub mod public {
 	pub trait NonZeroable: Copy {
@@ -38,7 +35,6 @@ macro_rules! impl_nonzero_traits {
 					self == 0
 				}
 
-				#[allow(unconditional_recursion)] // false positive
 				#[inline(always)]
 				fn is_power_of_two(self) -> bool {
 					<$ty>::is_power_of_two(self)
@@ -51,7 +47,7 @@ macro_rules! impl_nonzero_traits {
 
 				#[inline(always)]
 				unsafe fn new_unchecked(value: Self::Number) -> Self {
-					Self::new_unchecked(value)
+					<$nz>::new_unchecked(value)
 				}
 			}
 		)*
@@ -65,11 +61,12 @@ impl_nonzero_traits!(
 	u64: NonZeroU64,
 	u128: NonZeroU128,
 	usize: NonZeroUsize,
-	i8: NonZeroI8,
-	i16: NonZeroI16,
-	i32: NonZeroI32,
-	i64: NonZeroI64,
-	i128: NonZeroI128,
-	isize: NonZeroIsize,
+	// need own impl as they don't have is_power_of_two
+	// i8: NonZeroI8,
+	// i16: NonZeroI16,
+	// i32: NonZeroI32,
+	// i64: NonZeroI64,
+	// i128: NonZeroI128,
+	// isize: NonZeroIsize,
 );
 pub trait NonZeroable: public::NonZeroable + private::NonZeroable {}

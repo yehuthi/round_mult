@@ -42,11 +42,13 @@ impl<N: NonZeroable> NonZeroPow2<N> {
 
 #[cfg(test)]
 mod arbitrary_impl {
+	use crate::traits::Number;
+
 	use super::*;
 	use core::ops::Shl;
 	use quickcheck::Arbitrary;
 
-	impl<N: NonZeroable + crate::private::Number> Arbitrary for NonZeroPow2<N>
+	impl<N: NonZeroable + Number> Arbitrary for NonZeroPow2<N>
 	where
 		Self: 'static + Clone,
 		N: Shl<u8, Output = N>,

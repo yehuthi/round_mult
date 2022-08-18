@@ -1,8 +1,8 @@
 use std::num::{NonZeroU128, NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU8, NonZeroUsize};
 
-use crate::{private::Number, NonZeroPow2};
+use crate::NonZeroPow2;
 
-use super::NonZeroable;
+use super::{NonZeroable, Number};
 
 pub mod public {
 	pub trait Multiplier {

@@ -1,7 +1,7 @@
-mod nzp;
+pub mod nzp;
 
-use nzp::private::NonZeroable;
 pub use nzp::NonZeroPow2;
+use nzp::{public::NonZeroable, Scalar};
 use private::{Multiplier, Number};
 
 mod private {
@@ -29,7 +29,7 @@ mod private {
 	}
 }
 
-impl<N> Multiplier for NonZeroPow2<N>
+impl<N: Scalar> Multiplier for NonZeroPow2<N>
 where
 	N: NonZeroable + Number,
 	Self: Copy,

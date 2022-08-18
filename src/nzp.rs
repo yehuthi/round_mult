@@ -3,19 +3,17 @@ use core::num::{
 	NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU8, NonZeroUsize,
 };
 
-use self::private::{NonZero, NonZeroable};
-
 #[repr(transparent)]
 #[derive(Debug, Hash, Clone, Copy, PartialEq, PartialOrd, Eq, Ord)]
-pub struct NonZeroPow2<N: NonZeroable>(N::NonZeroType);
+pub struct NonZeroPow2<N: Scalar>(N::NonZeroType);
 
-impl<N: NonZeroable> NonZeroPow2<N> {
+impl<N: Scalar> NonZeroPow2<N> {
 	/// Creates a new [`NonZeroPow2`].
 	///
 	/// # Safety
 	/// Ensure the value is not zero and is a power of two.
 	pub unsafe fn new_unchecked(value: N) -> Self {
-		Self(N::NonZeroType::new_unchecked(value))
+		Self(<N::NonZeroType as private::NonZero>::new_unchecked(value))
 	}
 
 	/// Creates a new [`NonZeroPow2`].
@@ -45,12 +43,38 @@ impl<N: NonZeroable> NonZeroPow2<N> {
 	}
 }
 
+pub mod public {
+	pub trait NonZeroable: Copy {
+		type NonZeroType: super::private::NonZero<Number = Self>;
+	}
+}
+
+mod private {
+	pub trait NonZeroable: super::public::NonZeroable
+	where
+		Self::NonZeroType: super::private::NonZero,
+	{
+		fn is_zero(self) -> bool;
+		fn is_power_of_two(self) -> bool;
+	}
+
+	pub trait NonZero: Into<Self::Number> {
+		type Number;
+
+		unsafe fn new_unchecked(value: Self::Number) -> Self;
+	}
+}
+
+pub trait Scalar: public::NonZeroable + private::NonZeroable {}
+
 macro_rules! impl_nonzero_traits {
 	($($ty:ty: $nz:ty),* $(,)?) => {
 		$(
-			impl NonZeroable for $ty {
+			impl public::NonZeroable for $ty {
 				type NonZeroType = $nz;
+			}
 
+			impl private::NonZeroable for $ty {
 				#[inline(always)]
 				fn is_zero(self) -> bool {
 					self == 0
@@ -62,8 +86,9 @@ macro_rules! impl_nonzero_traits {
 					<$ty>::is_power_of_two(self)
 				}
 			}
+			impl Scalar for $ty {}
 
-			impl NonZero for $nz {
+			impl private::NonZero for $nz {
 				type Number = $ty;
 
 				#[inline(always)]
@@ -90,27 +115,13 @@ impl_nonzero_traits!(
 	isize: NonZeroIsize,
 );
 
-pub(crate) mod private {
-	pub trait NonZeroable: Copy {
-		type NonZeroType: NonZero<Number = Self>;
-
-		fn is_zero(self) -> bool;
-		fn is_power_of_two(self) -> bool;
-	}
-
-	pub trait NonZero: Into<Self::Number> {
-		type Number;
-
-		unsafe fn new_unchecked(value: Self::Number) -> Self;
-	}
-}
 #[cfg(test)]
 mod arbitrary_impl {
 	use super::*;
 	use core::ops::Shl;
 	use quickcheck::Arbitrary;
 
-	impl<N: NonZeroable + crate::Number> Arbitrary for NonZeroPow2<N>
+	impl<N: Scalar + crate::private::Number> Arbitrary for NonZeroPow2<N>
 	where
 		Self: 'static + Clone,
 		N: Shl<u8, Output = N>,

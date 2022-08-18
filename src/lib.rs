@@ -1,147 +1,167 @@
-#![doc = include_str!("../README.md")]
-#![no_std]
-#![deny(missing_docs)]
+mod nzp;
 
-use core::ops::{Add, BitAnd, Not, Sub};
+use core::ops::{BitAnd, Not, Sub};
+use std::{num::NonZeroU8, ops::Add};
 
-/// The trait for numbers in this library.
-///
-/// This allows the rounding functions to work with any primitive integer type.
-pub trait Num: Sub<Output = Self> + Not<Output = Self> + BitAnd<Output = Self> + Sized {
-	/// The non-zero type for this number.
-	/// # Examples
-	/// ```
-	/// # use round_mult::Num;
-	/// use std::any::{Any, TypeId};
-	///
-	/// assert_eq!(
-	///     <usize as Num>::NonZero::new(10).unwrap().type_id(),
-	///     TypeId::of::<std::num::NonZeroUsize>(),
-	/// );
-	/// ```
-	type NonZero: Into<Self>;
+use nzp::private::NonZeroable;
+pub use nzp::NonZeroPow2;
+use private::Multiplier;
 
-	/// Returns the value for the number one in this type's representation.
-	///
-	/// # Examples
-	/// ```
-	/// # use round_mult::Num;
-	/// assert_eq!(
-	///     <u8 as Num>::ONE,
-	///     1u8
-	/// );
-	/// assert_eq!(
-	///     <i32 as Num>::ONE,
-	///     1i32
-	/// );
-	/// assert_eq!(
-	///     <usize as Num>::ONE,
-	///     1usize
-	/// );
-	/// ```
-	const ONE: Self;
-}
+mod private {
+	pub trait Multiplier {
+		type Number;
 
-mod num_impl {
-	use crate::Num;
-	use core::{
-		num::{
-			NonZeroI128, NonZeroI16, NonZeroI32, NonZeroI64, NonZeroI8, NonZeroIsize, NonZeroU128,
-			NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU8, NonZeroUsize,
-		},
-		ops::{BitAnd, Not, Sub},
-	};
+		fn get(self) -> Self::Number;
 
-	macro_rules! impl_num {
-	($($t:ty : $nz:ty),+) => {
-		$(
-		impl Num for $t {
-			type NonZero = $nz;
-			const ONE: Self = 1;
-		}
-		)+
-	}
-}
-	impl_num!(
-		u8: NonZeroU8,
-		u16: NonZeroU16,
-		u32: NonZeroU32,
-		u64: NonZeroU64,
-		u128: NonZeroU128,
-		usize: NonZeroUsize,
-		i8: NonZeroI8,
-		i16: NonZeroI16,
-		i32: NonZeroI32,
-		i64: NonZeroI64,
-		i128: NonZeroI128,
-		isize: NonZeroIsize
-	);
-
-	impl<T: Num> Num for core::num::Wrapping<T>
-	where
-		Self: Sub<Output = Self> + Not<Output = Self> + BitAnd<Output = Self>,
-		T::NonZero: Into<Self>,
-	{
-		type NonZero = T::NonZero;
-		const ONE: Self = Self(T::ONE);
+		fn down(self, value: Self::Number) -> Self::Number;
+		fn up(self, value: Self::Number) -> Option<Self::Number>;
 	}
 }
 
-/// Rounds the `value` down to the nearest multiplier of `mult`.
-///
-/// # Examples
-/// ```
-/// # use core::num::NonZeroUsize;
-/// assert_eq!(
-///     round_mult::down(109usize, NonZeroUsize::new(10).unwrap()),
-///     100
-/// );
-/// ```
-#[inline(always)]
-pub fn down<N: Num>(value: N, mult: N::NonZero) -> N {
-	value & !(mult.into() - N::ONE)
-}
-
-/// Rounds the `value` up to the nearest multiplier of `mult`.
-///
-/// # Examples
-/// ```
-/// # use core::num::NonZeroUsize;
-/// assert_eq!(
-///     round_mult::up(101usize, NonZeroUsize::new(10).unwrap()),
-///     110
-/// );
-/// ```
-#[inline(always)]
-pub fn up<N: Num + Add<Output = N>>(value: N, mult: N::NonZero) -> N
+impl<N> Multiplier for NonZeroPow2<N>
 where
-	N::NonZero: Copy,
+	N: NonZeroable + Number,
+	Self: Copy,
 {
-	// TODO: specialized implementation
-	down(value, mult) + mult.into()
+	type Number = N;
+
+	#[inline(always)]
+	fn get(self) -> Self::Number {
+		self.get()
+	}
+
+	#[inline(always)]
+	fn down(self, value: Self::Number) -> Self::Number {
+		value & !(self.get() - N::ONE)
+	}
+
+	#[inline(always)]
+	fn up(self, value: Self::Number) -> Option<Self::Number> {
+		if self.get() == value {
+			return Some(value);
+		}
+		self.down(value).checked_add(self.get())
+	}
+}
+
+pub trait Number:
+	Copy
+	+ PartialEq
+	+ Add<Output = Self>
+	+ Sub<Output = Self>
+	+ Not<Output = Self>
+	+ BitAnd<Output = Self>
+{
+	const ONE: Self;
+	fn checked_add(self, rhs: Self) -> Option<Self>;
+}
+
+impl Multiplier for NonZeroU8 {
+	type Number = u8;
+
+	#[inline(always)]
+	fn get(self) -> Self::Number {
+		self.get()
+	}
+
+	#[inline]
+	fn down(self, value: Self::Number) -> Self::Number {
+		if value % self.get() != 0 {
+			value / self.get() * self.get()
+		} else {
+			value
+		}
+	}
+
+	#[inline]
+	fn up(self, value: Self::Number) -> Option<Self::Number> {
+		let r = value % self;
+		if r == 0 {
+			Some(value)
+		} else {
+			value.checked_add(self.get() - r)
+		}
+	}
+}
+
+macro_rules! impl_number {
+	($($ty:ty),* $(,)?) => {
+		$(
+			impl Number for $ty {
+				const ONE: Self = 1;
+
+				#[inline(always)]
+				fn checked_add(self, rhs: Self) -> Option<Self> {
+					<$ty>::checked_add(self, rhs)
+				}
+			}
+		)*
+	}
+}
+
+impl_number!(u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize);
+
+#[inline(always)]
+pub fn down<M: Multiplier>(value: M::Number, multiplier: M) -> M::Number {
+	multiplier.down(value)
+}
+
+#[inline(always)]
+pub fn up<M: Multiplier>(value: M::Number, multiplier: M) -> Option<M::Number> {
+	multiplier.up(value)
 }
 
 #[cfg(test)]
 mod test {
-	use core::num::NonZeroUsize;
-
 	use super::*;
 	use quickcheck::TestResult;
 	use quickcheck_macros::quickcheck;
 
 	#[quickcheck]
-	fn round_down_is_correct(value: usize, mult: NonZeroUsize) -> TestResult {
-		if !mult.is_power_of_two() {
-			return TestResult::discard();
-		}
-		TestResult::from_bool(down(value, mult) == (value / mult) * mult.get())
+	fn mult2_down_round_mult_is_identity(value: NonZeroPow2<u8>) -> bool {
+		down(value.get(), value) == value.get()
 	}
 
 	#[quickcheck]
-	fn round_up_is_correct(value: usize, mult: NonZeroUsize) -> TestResult {
-		if !mult.is_power_of_two() {
-			return TestResult::discard();
+	fn mult2_up_round_mult_is_identity(value: NonZeroPow2<u8>) -> bool {
+		up(value.get(), value) == Some(value.get())
+	}
+
+	#[quickcheck]
+	fn mult_down_round_mult_is_identity(value: NonZeroU8) -> bool {
+		down(value.get(), value) == value.get()
+	}
+
+	#[quickcheck]
+	fn mult_up_round_mult_is_identity(value: NonZeroU8) -> bool {
+		up(value.get(), value) == Some(value.get())
+	}
+
+	#[quickcheck]
+	fn mult_up_overflow_is_none(value: u8, mult: NonZeroU8) -> TestResult {
+		if value % mult.get() != 0 && u8::MAX - ((value / mult) * mult.get()) < mult.get() {
+			TestResult::from_bool(up(value, mult).is_none())
+		} else {
+			TestResult::discard()
 		}
-		TestResult::from_bool(up(value, mult) == ((value / mult) * mult.get()) + mult.get())
+	}
+
+	#[quickcheck]
+	fn mult2_up_overflow_is_none(value: u8, mult: NonZeroPow2<u8>) -> TestResult {
+		if value % mult.get() != 0 && u8::MAX - ((value / mult.get()) * mult.get()) < mult.get() {
+			TestResult::from_bool(up(value, mult).is_none())
+		} else {
+			TestResult::discard()
+		}
+	}
+
+	#[quickcheck]
+	fn mult2_down_is_correct(value: u8, mult: NonZeroPow2<u8>) -> bool {
+		down(value, mult) == (value / mult.get()) * mult.get()
+	}
+
+	#[quickcheck]
+	fn mult_down_is_correct(value: u8, mult: NonZeroU8) -> bool {
+		down(value, mult) == (value / mult.get()) * mult.get()
 	}
 }

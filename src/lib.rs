@@ -1,8 +1,9 @@
-pub mod nzp;
+mod nzp;
+pub mod traits;
 
 pub use nzp::NonZeroPow2;
-use nzp::{public::NonZeroable, Scalar};
 use private::{Multiplier, Number};
+use traits::NonZeroable;
 
 mod private {
 	use std::ops::{Add, BitAnd, Not, Sub};
@@ -29,7 +30,7 @@ mod private {
 	}
 }
 
-impl<N: Scalar> Multiplier for NonZeroPow2<N>
+impl<N: NonZeroable> Multiplier for NonZeroPow2<N>
 where
 	N: NonZeroable + Number,
 	Self: Copy,
@@ -73,7 +74,7 @@ macro_rules! impl_number {
 macro_rules! impl_unsigned_number {
 	($($ty:ty),* $(,)?) => {
 		$(
-			impl Multiplier for <$ty as NonZeroable>::NonZeroType {
+			impl Multiplier for <$ty as crate::traits::nonzero::public::NonZeroable>::NonZeroType {
 				type Number = $ty;
 
 				#[inline(always)]

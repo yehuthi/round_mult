@@ -27,6 +27,14 @@ impl<N: NonZeroable> NonZeroPow2<N> {
 	/// Creates a new [`NonZeroPow2`].
 	///
 	/// Returns [`None`] if the given value is zero or not a power of two.
+	///
+	/// # Examples
+	/// ```
+	/// # use round_mult::NonZeroPow2;
+	/// assert!(NonZeroPow2::new(0usize).is_none());
+	/// assert!(NonZeroPow2::new(2usize).is_some());
+	/// assert!(NonZeroPow2::new(4usize).is_some());
+	/// assert!(NonZeroPow2::new(6usize).is_none());
 	/// ```
 	#[inline]
 	pub fn new(value: N) -> Option<Self> {
@@ -34,12 +42,31 @@ impl<N: NonZeroable> NonZeroPow2<N> {
 	}
 
 	/// Gets the value of the number in its primitive representation.
+	///
+	/// # Examples
+	/// ```
+	/// # use round_mult::NonZeroPow2;
+	/// assert_eq!(
+	///     NonZeroPow2::new(32usize).unwrap().get(),
+	///     32usize,
+	/// );
+	/// ```
 	#[inline(always)]
 	pub fn get(self) -> N {
 		self.0.into()
 	}
 
 	/// Gets the value of the number in its nonzero representation.
+	///
+	/// # Examples
+	/// ```
+	/// # use round_mult::NonZeroPow2;
+	/// # use core::num::NonZeroUsize;
+	/// assert_eq!(
+	///     NonZeroPow2::new(32usize).unwrap().get_nonzero(),
+	///     NonZeroUsize::new(32usize).unwrap(),
+	/// );
+	/// ```
 	#[inline(always)]
 	pub fn get_nonzero(self) -> N::NonZeroType {
 		self.0

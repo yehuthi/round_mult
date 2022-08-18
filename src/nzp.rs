@@ -51,11 +51,11 @@ mod arbitrary_impl {
 	impl<N: NonZeroable + Number> Arbitrary for NonZeroPow2<N>
 	where
 		Self: 'static + Clone,
-		N: Shl<u8, Output = N>,
+		N: Shl<u32, Output = N>,
 	{
 		#[inline]
 		fn arbitrary(g: &mut quickcheck::Gen) -> Self {
-			Self::new((N::ONE << 1) << (u8::arbitrary(g) % 7)).unwrap()
+			Self::new((N::ONE << 1) << (u32::arbitrary(g) % (N::BITS - 1))).unwrap()
 		}
 	}
 }

@@ -9,6 +9,7 @@ pub(crate) mod private {
 		+ Not<Output = Self>
 		+ BitAnd<Output = Self>
 	{
+		const BITS: u32;
 		const ONE: Self;
 		fn checked_add(self, rhs: Self) -> Option<Self>;
 	}
@@ -20,6 +21,7 @@ macro_rules! impl_number {
 	($($ty:ty),* $(,)?) => {
 		$(
 			impl private::Number for $ty {
+				const BITS: u32 = <$ty>::BITS;
 				const ONE: Self = 1;
 
 				#[inline(always)]

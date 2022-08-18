@@ -1,7 +1,7 @@
 mod nzp;
-pub mod traits;
-
 pub use nzp::NonZeroPow2;
+
+pub mod traits;
 use traits::Multiplier;
 
 #[inline(always)]

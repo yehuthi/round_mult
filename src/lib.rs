@@ -1,13 +1,14 @@
 mod nzp;
 
-use core::ops::{BitAnd, Not, Sub};
-use std::{num::NonZeroU8, ops::Add};
+use core::num::NonZeroU8;
 
 use nzp::private::NonZeroable;
 pub use nzp::NonZeroPow2;
-use private::Multiplier;
+use private::{Multiplier, Number};
 
 mod private {
+	use std::ops::{Add, BitAnd, Not, Sub};
+
 	pub trait Multiplier {
 		type Number;
 
@@ -15,6 +16,18 @@ mod private {
 
 		fn down(self, value: Self::Number) -> Self::Number;
 		fn up(self, value: Self::Number) -> Option<Self::Number>;
+	}
+
+	pub trait Number:
+		Copy
+		+ PartialEq
+		+ Add<Output = Self>
+		+ Sub<Output = Self>
+		+ Not<Output = Self>
+		+ BitAnd<Output = Self>
+	{
+		const ONE: Self;
+		fn checked_add(self, rhs: Self) -> Option<Self>;
 	}
 }
 
@@ -42,18 +55,6 @@ where
 		}
 		self.down(value).checked_add(self.get())
 	}
-}
-
-pub trait Number:
-	Copy
-	+ PartialEq
-	+ Add<Output = Self>
-	+ Sub<Output = Self>
-	+ Not<Output = Self>
-	+ BitAnd<Output = Self>
-{
-	const ONE: Self;
-	fn checked_add(self, rhs: Self) -> Option<Self>;
 }
 
 impl Multiplier for NonZeroU8 {

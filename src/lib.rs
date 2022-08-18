@@ -2,20 +2,11 @@ mod nzp;
 pub mod traits;
 
 pub use nzp::NonZeroPow2;
-use private::{Multiplier, Number};
-use traits::NonZeroable;
+use private::Number;
+use traits::Multiplier;
 
 mod private {
 	use std::ops::{Add, BitAnd, Not, Sub};
-
-	pub trait Multiplier {
-		type Number;
-
-		fn get(self) -> Self::Number;
-
-		fn down(self, value: Self::Number) -> Self::Number;
-		fn up(self, value: Self::Number) -> Option<Self::Number>;
-	}
 
 	pub trait Number:
 		Copy
@@ -27,32 +18,6 @@ mod private {
 	{
 		const ONE: Self;
 		fn checked_add(self, rhs: Self) -> Option<Self>;
-	}
-}
-
-impl<N: NonZeroable> Multiplier for NonZeroPow2<N>
-where
-	N: NonZeroable + Number,
-	Self: Copy,
-{
-	type Number = N;
-
-	#[inline(always)]
-	fn get(self) -> Self::Number {
-		self.get()
-	}
-
-	#[inline(always)]
-	fn down(self, value: Self::Number) -> Self::Number {
-		value & !(self.get() - N::ONE)
-	}
-
-	#[inline(always)]
-	fn up(self, value: Self::Number) -> Option<Self::Number> {
-		if self.get() == value {
-			return Some(value);
-		}
-		self.down(value).checked_add(self.get())
 	}
 }
 
@@ -70,42 +35,6 @@ macro_rules! impl_number {
 		)*
 	}
 }
-
-macro_rules! impl_unsigned_number {
-	($($ty:ty),* $(,)?) => {
-		$(
-			impl Multiplier for <$ty as crate::traits::nonzero::public::NonZeroable>::NonZeroType {
-				type Number = $ty;
-
-				#[inline(always)]
-				fn get(self) -> Self::Number {
-					self.get()
-				}
-
-				#[inline]
-				fn down(self, value: Self::Number) -> Self::Number {
-					if value % self.get() != 0 {
-						value / self.get() * self.get()
-					} else {
-						value
-					}
-				}
-
-				#[inline]
-				fn up(self, value: Self::Number) -> Option<Self::Number> {
-					let r = value % self;
-					if r == 0 {
-						Some(value)
-					} else {
-						value.checked_add(self.get() - r)
-					}
-				}
-			}
-		)*
-	};
-}
-
-impl_unsigned_number!(u8, u16, u32, u64, u128, usize);
 
 impl_number!(u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize);
 

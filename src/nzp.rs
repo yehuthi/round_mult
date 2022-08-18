@@ -1,5 +1,8 @@
+//! [`NonZeroPow2`]
+
 use crate::traits::NonZeroable;
 
+/// A number that is non-zero and is a power of two.
 #[repr(transparent)]
 #[derive(Debug, Hash, Clone, Copy, PartialEq, PartialOrd, Eq, Ord)]
 pub struct NonZeroPow2<N: NonZeroable>(N::NonZeroType);
@@ -24,16 +27,19 @@ impl<N: NonZeroable> NonZeroPow2<N> {
 	/// Creates a new [`NonZeroPow2`].
 	///
 	/// Returns [`None`] if the given value is zero or not a power of two.
+	/// ```
 	#[inline]
 	pub fn new(value: N) -> Option<Self> {
 		(!value.is_zero() && value.is_power_of_two()).then(|| unsafe { Self::new_unchecked(value) })
 	}
 
+	/// Gets the value of the number in its primitive representation.
 	#[inline(always)]
 	pub fn get(self) -> N {
 		self.0.into()
 	}
 
+	/// Gets the value of the number in its nonzero representation.
 	#[inline(always)]
 	pub fn get_nonzero(self) -> N::NonZeroType {
 		self.0

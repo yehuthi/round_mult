@@ -20,6 +20,14 @@ impl<N: NonZeroable> NonZeroPow2<N> {
 
 	/// Creates a new [`NonZeroPow2`].
 	///
+	/// # Safety
+	/// Ensure the value is a power of two.
+	pub const unsafe fn from_nonzero_unchecked(value: N::NonZeroType) -> Self {
+		Self(value)
+	}
+
+	/// Creates a new [`NonZeroPow2`].
+	///
 	/// Returns [`None`] if the given value is zero or not a power of two.
 	#[inline]
 	pub fn new(value: N) -> Option<Self> {
@@ -29,6 +37,11 @@ impl<N: NonZeroable> NonZeroPow2<N> {
 	#[inline(always)]
 	pub fn get(self) -> N {
 		self.0.into()
+	}
+
+	#[inline(always)]
+	pub fn get_nonzero(self) -> N::NonZeroType {
+		self.0
 	}
 }
 

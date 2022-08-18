@@ -1,7 +1,5 @@
 mod nzp;
 
-use core::num::NonZeroU8;
-
 use nzp::private::NonZeroable;
 pub use nzp::NonZeroPow2;
 use private::{Multiplier, Number};
@@ -57,34 +55,6 @@ where
 	}
 }
 
-impl Multiplier for NonZeroU8 {
-	type Number = u8;
-
-	#[inline(always)]
-	fn get(self) -> Self::Number {
-		self.get()
-	}
-
-	#[inline]
-	fn down(self, value: Self::Number) -> Self::Number {
-		if value % self.get() != 0 {
-			value / self.get() * self.get()
-		} else {
-			value
-		}
-	}
-
-	#[inline]
-	fn up(self, value: Self::Number) -> Option<Self::Number> {
-		let r = value % self;
-		if r == 0 {
-			Some(value)
-		} else {
-			value.checked_add(self.get() - r)
-		}
-	}
-}
-
 macro_rules! impl_number {
 	($($ty:ty),* $(,)?) => {
 		$(
@@ -100,6 +70,42 @@ macro_rules! impl_number {
 	}
 }
 
+macro_rules! impl_unsigned_number {
+	($($ty:ty),* $(,)?) => {
+		$(
+			impl Multiplier for <$ty as NonZeroable>::NonZeroType {
+				type Number = $ty;
+
+				#[inline(always)]
+				fn get(self) -> Self::Number {
+					self.get()
+				}
+
+				#[inline]
+				fn down(self, value: Self::Number) -> Self::Number {
+					if value % self.get() != 0 {
+						value / self.get() * self.get()
+					} else {
+						value
+					}
+				}
+
+				#[inline]
+				fn up(self, value: Self::Number) -> Option<Self::Number> {
+					let r = value % self;
+					if r == 0 {
+						Some(value)
+					} else {
+						value.checked_add(self.get() - r)
+					}
+				}
+			}
+		)*
+	};
+}
+
+impl_unsigned_number!(u8, u16, u32, u64, u128, usize);
+
 impl_number!(u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize);
 
 #[inline(always)]
@@ -114,6 +120,8 @@ pub fn up<M: Multiplier>(value: M::Number, multiplier: M) -> Option<M::Number> {
 
 #[cfg(test)]
 mod test {
+	use std::num::NonZeroU8;
+
 	use super::*;
 	use quickcheck::TestResult;
 	use quickcheck_macros::quickcheck;

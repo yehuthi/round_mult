@@ -1,6 +1,6 @@
 #![doc = include_str!("../README.md")]
 #![no_std]
-#![deny(clippy::missing_inline_in_public_items)]
+#![deny(clippy::missing_inline_in_public_items, missing_docs)]
 
 mod nzp;
 pub use nzp::NonZeroPow2;

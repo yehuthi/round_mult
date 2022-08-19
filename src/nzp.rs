@@ -1,11 +1,102 @@
 //! [`NonZeroPow2`]
 
-use crate::traits::NonZeroable;
+use core::ops::Shl;
+
+use crate::traits::{NonZeroable, Number};
 
 /// A number that is non-zero and is a power of two.
 #[repr(transparent)]
 #[derive(Debug, Hash, Clone, Copy, PartialEq, PartialOrd, Eq, Ord)]
 pub struct NonZeroPow2<N: NonZeroable>(N::NonZeroType);
+
+impl<N: NonZeroable> NonZeroPow2<N>
+where
+	N: Number + Shl<u32, Output = N>,
+{
+	/// The value 2.
+	///
+	/// # Examples
+	/// ```
+	/// # use round_mult::NonZeroPow2;
+	/// assert_eq!(NonZeroPow2::<u32>::v2().get(), 2);
+	/// ```
+	#[inline(always)]
+	pub fn v2() -> Self {
+		unsafe { Self::new_unchecked(N::ONE << 1) }
+	}
+
+	/// The value 4.
+	///
+	/// # Examples
+	/// ```
+	/// # use round_mult::NonZeroPow2;
+	/// assert_eq!(NonZeroPow2::<u32>::v4().get(), 4);
+	/// ```
+	#[inline(always)]
+	pub fn v4() -> Self {
+		unsafe { Self::new_unchecked(Self::v2().get() << 1) }
+	}
+
+	/// The value 8.
+	///
+	/// # Examples
+	/// ```
+	/// # use round_mult::NonZeroPow2;
+	/// assert_eq!(NonZeroPow2::<u32>::v8().get(), 8);
+	/// ```
+	#[inline(always)]
+	pub fn v8() -> Self {
+		unsafe { Self::new_unchecked(Self::v4().get() << 1) }
+	}
+
+	/// The value 16.
+	///
+	/// # Examples
+	/// ```
+	/// # use round_mult::NonZeroPow2;
+	/// assert_eq!(NonZeroPow2::<u32>::v16().get(), 16);
+	/// ```
+	#[inline(always)]
+	pub fn v16() -> Self {
+		unsafe { Self::new_unchecked(Self::v8().get() << 1) }
+	}
+
+	/// The value 32.
+	///
+	/// # Examples
+	/// ```
+	/// # use round_mult::NonZeroPow2;
+	/// assert_eq!(NonZeroPow2::<u32>::v32().get(), 32);
+	/// ```
+	#[inline(always)]
+	pub fn v32() -> Self {
+		unsafe { Self::new_unchecked(Self::v16().get() << 1) }
+	}
+
+	/// The value 64.
+	///
+	/// # Examples
+	/// ```
+	/// # use round_mult::NonZeroPow2;
+	/// assert_eq!(NonZeroPow2::<u32>::v64().get(), 64);
+	/// ```
+	#[inline(always)]
+	pub fn v64() -> Self {
+		unsafe { Self::new_unchecked(Self::v32().get() << 1) }
+	}
+
+	/// The value 128.
+	///
+	/// # Examples
+	/// ```
+	/// # use round_mult::NonZeroPow2;
+	/// assert_eq!(NonZeroPow2::<u32>::v128().get(), 128);
+	/// ```
+	#[inline(always)]
+	pub fn v128() -> Self {
+		unsafe { Self::new_unchecked(Self::v64().get() << 1) }
+	}
+}
 
 impl<N: NonZeroable> NonZeroPow2<N> {
 	/// Creates a new [`NonZeroPow2`].

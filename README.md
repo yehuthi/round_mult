@@ -51,18 +51,22 @@ assert_eq!(
 
 The main motivation for this library is SIMD processing. Specifically when the length of data isn't a multiple of the SIMD lanes count, which means you will have a remainder of data to process without SIMD.
 
-```ignore
+```rust
+use round_mult::NonZeroPow2;
+
 fn f(data: &[u8]) {
-	type Simd = std::simd::u8x32; // or whichever
+	// for this example, assume std::simd::u8x32 is used.
+	let lanes = NonZeroPow2::v32();
 
 	let mut i = 0;
 
-	while i < round_mult::down(data.len(), Simd::LANES) {
-		let data = Simd::from_slice(s[i..]);
+	while i < round_mult::down(data.len(), lanes) {
 		// SIMD process…
-		i += Simd::LANES;
+		// let data = Simd::from_slice(s[i..]);
+		// etc. etc.
+		i += lanes.get();
 	}
-	while i < len {
+	while i < data.len() {
 		// remainder process…
 		i += 1;
 	}

@@ -103,6 +103,7 @@ impl<N: NonZeroable> NonZeroPow2<N> {
 	///
 	/// # Safety
 	/// Ensure the value is not zero and is a power of two.
+	#[inline(always)]
 	pub unsafe fn new_unchecked(value: N) -> Self {
 		Self(<N::NonZeroType as crate::traits::nonzero::private::NonZero>::new_unchecked(value))
 	}
@@ -111,6 +112,7 @@ impl<N: NonZeroable> NonZeroPow2<N> {
 	///
 	/// # Safety
 	/// Ensure the value is a power of two.
+	#[inline(always)]
 	pub const unsafe fn from_nonzero_unchecked(value: N::NonZeroType) -> Self {
 		Self(value)
 	}

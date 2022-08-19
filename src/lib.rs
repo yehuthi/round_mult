@@ -1,4 +1,5 @@
 #![no_std]
+#![deny(clippy::missing_inline_in_public_items)]
 
 mod nzp;
 pub use nzp::NonZeroPow2;

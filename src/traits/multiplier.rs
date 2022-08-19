@@ -7,7 +7,9 @@ use crate::NonZeroPow2;
 use super::{NonZeroable, Number};
 
 pub mod public {
+	/// See [`Multiplier`](crate::traits::Multiplier).
 	pub trait Multiplier {
+		/// The type of the multiplied number of this multiplier.
 		type Number;
 	}
 }
@@ -21,6 +23,11 @@ pub(crate) mod private {
 	}
 }
 
+/// A numeric type that may act as a multiplier for another number.
+///
+/// This helps add safety and optimization:
+/// - NonZeroT is a multiplier where T is not, so we don't divide by zero by accident.
+/// - [`NonZeroPow2`](crate::NonZeroPow2) takes advanage of its invariant to calculate results faster.
 pub trait Multiplier: public::Multiplier + private::Multiplier {}
 
 macro_rules! impl_unsigned_number {

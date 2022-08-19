@@ -17,6 +17,10 @@ pub(crate) mod private {
 	}
 }
 
+/// A primitive number.
+///
+/// This trait is an implementation detail that provides some operations.
+/// For users of the library, the only things that matter are when it's required and the set of types that implement it.
 pub trait Number: private::Number {}
 
 macro_rules! impl_number {

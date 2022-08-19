@@ -3,7 +3,9 @@
 use core::num::{NonZeroU128, NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU8, NonZeroUsize};
 
 pub mod public {
+	/// See [`NonZeroable`](crate::traits::NonZeroable).
 	pub trait NonZeroable: Copy {
+		/// The non-zero type.
 		type NonZeroType: super::private::NonZero<Number = Self>;
 	}
 }
@@ -71,4 +73,9 @@ impl_nonzero_traits!(
 	// i128: NonZeroI128,
 	// isize: NonZeroIsize,
 );
+
+/// A number that has a non-zero type representation.
+///
+/// # Examples
+/// [`u8`] and [`NonZeroU8`](core::num::NonZeroU8), [`usize`] and [`NonZeroUsize`](core::num::NonZeroUsize), etc.
 pub trait NonZeroable: public::NonZeroable + private::NonZeroable {}

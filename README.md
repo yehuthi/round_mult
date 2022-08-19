@@ -10,18 +10,40 @@ The library has two functions:
 
 They both take a value and a multiplier and round the value down or up to the multiplier respectively.
 
+## Multiplier
+
+There are two kind of multipliers:
+- [`NonZeroPow2`] When the multiplier is a power of two, it can be calculated faster. Prefer it when possible.
+- [`std::num::NonZeroU_`](https://doc.rust-lang.org/std/num/index.html#:~:text=to%20equal%20zero.-,NonZeroU8,An%20integer%20that%20is%20known%20not%20to%20equal%20zero.,-ParseFloatError) for any multiplier value.
+
+# Example
+
 E.g.
 ```rust
 use std::num::NonZeroUsize;
+use round_mult::NonZeroPow2;
 
+assert_eq!(
+	round_mult::down(70usize, NonZeroPow2::v32()),
+	64
+);
+
+// These two are semantically equivalent:
+assert_eq!(
+	round_mult::down(70usize, NonZeroPow2::new(32).unwrap()),
+	round_mult::down(70usize, NonZeroUsize::new(32).unwrap()),
+);
+// but NonZeroPow2 (the first parameter) is faster.
+
+// However, it can't be used when the multiplier isn't a power of two.
+// In that case use a NonZeroU_ type:
 assert_eq!(
     round_mult::down(109usize, NonZeroUsize::new(10).unwrap()),
     100
 );
-
 assert_eq!(
     round_mult::up(101usize, NonZeroUsize::new(10).unwrap()),
-    110
+    Some(110)
 );
 ```
 
@@ -46,10 +68,3 @@ fn f(data: &[u8]) {
 	}
 }
 ```
-
-# Features
-
-## num-traits
-
-This feature makes the library work on traits from the [`num-traits`](https://crates.io/crates/num-traits) crate.
-It is off by default.

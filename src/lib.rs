@@ -1,3 +1,4 @@
+#![doc = include_str!("../README.md")]
 #![no_std]
 #![deny(clippy::missing_inline_in_public_items)]
 
@@ -7,11 +8,15 @@ pub use nzp::NonZeroPow2;
 pub mod traits;
 use traits::Multiplier;
 
+/// Rounds the number down.
 #[inline(always)]
 pub fn down<M: Multiplier>(value: M::Number, multiplier: M) -> M::Number {
 	multiplier.down(value)
 }
 
+/// Rounds the number up.
+///
+/// Returns [`None`] if the result overflows.
 #[inline(always)]
 pub fn up<M: Multiplier>(value: M::Number, multiplier: M) -> Option<M::Number> {
 	multiplier.up(value)

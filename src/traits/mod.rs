@@ -1,3 +1,5 @@
+//! The traits for generalizing over integer primitives.
+
 pub(crate) mod nonzero;
 pub use nonzero::public::NonZeroable as NonZeroableBase;
 pub use nonzero::NonZeroable;

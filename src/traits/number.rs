@@ -1,3 +1,5 @@
+//! [`Number`]
+
 pub(crate) mod private {
 	use core::ops::{Add, BitAnd, Not, Sub};
 

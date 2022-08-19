@@ -1,3 +1,5 @@
+//! [`Multiplier`]
+
 use core::num::{NonZeroU128, NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU8, NonZeroUsize};
 
 use crate::NonZeroPow2;

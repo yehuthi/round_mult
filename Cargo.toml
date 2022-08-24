@@ -1,6 +1,6 @@
 [package]
 name = "round_mult"
-version = "0.1.1"
+version = "0.1.2"
 description = "A tiny library to round a number up or down to a multiplier."
 homepage = "https://github.com/yehuthi/round_mult"
 repository = "https://github.com/yehuthi/round_mult"

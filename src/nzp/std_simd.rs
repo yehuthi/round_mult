@@ -9,6 +9,8 @@ mod private {
 
     pub trait LanesMultNum : NonZeroable + Number + Shl<u32, Output=Self> {}
 
+    impl<T> LanesMultNum for T where T: NonZeroable + Number + Shl<u32, Output=Self> {}
+
     pub trait LanesMult {
         fn lanes_mult<N : LanesMultNum>() -> NonZeroPow2<N>;
     }

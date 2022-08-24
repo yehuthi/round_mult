@@ -17,16 +17,19 @@ macro_rules! impl_lanes_mult {
             impl<T: MaskElement> private::Sealed for Mask<T, $n> {}
             impl private::Sealed for LaneCount<$n> {}
             impl<T: SimdElement> LanesMult for Simd<T, $n> {
+                #[inline(always)]
                 fn lanes_mult<N: NonZeroable + Number + Shl<u32, Output=N>>() -> NonZeroPow2<N> {
                     $v()
                 }
             }
             impl<T: MaskElement> LanesMult for Mask<T, $n> {
+                #[inline(always)]
                 fn lanes_mult<N: NonZeroable + Number + Shl<u32, Output=N>>() -> NonZeroPow2<N> {
                     $v()
                 }
             }
             impl LanesMult for LaneCount<$n> {
+                #[inline(always)]
                 fn lanes_mult<N: NonZeroable + Number + Shl<u32, Output=N>>() -> NonZeroPow2<N> {
                     $v()
                 }

@@ -1,4 +1,4 @@
-use core::{ops::Shl, simd::{Simd, SimdElement}};
+use core::{ops::Shl, simd::{Simd, SimdElement, Mask, MaskElement, LaneCount}};
 
 use crate::{NonZeroPow2, traits::{NonZeroable, Number}};
 
@@ -14,7 +14,19 @@ macro_rules! impl_lanes_mult {
     ($($n:expr => $v:expr),* $(,)?) => {
         $(
             impl<T: SimdElement> private::Sealed for Simd<T, $n> {}
+            impl<T: MaskElement> private::Sealed for Mask<T, $n> {}
+            impl private::Sealed for LaneCount<$n> {}
             impl<T: SimdElement> LanesMult for Simd<T, $n> {
+                fn lanes_mult<N: NonZeroable + Number + Shl<u32, Output=N>>() -> NonZeroPow2<N> {
+                    $v()
+                }
+            }
+            impl<T: MaskElement> LanesMult for Mask<T, $n> {
+                fn lanes_mult<N: NonZeroable + Number + Shl<u32, Output=N>>() -> NonZeroPow2<N> {
+                    $v()
+                }
+            }
+            impl LanesMult for LaneCount<$n> {
                 fn lanes_mult<N: NonZeroable + Number + Shl<u32, Output=N>>() -> NonZeroPow2<N> {
                     $v()
                 }

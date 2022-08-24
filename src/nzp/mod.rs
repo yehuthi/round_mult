@@ -2,6 +2,7 @@
 
 #[cfg(nightly)]
 mod std_simd;
+pub use std_simd::LanesMult;
 
 use core::ops::Shl;
 

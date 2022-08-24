@@ -55,7 +55,10 @@ The main motivation for this library is SIMD processing. Specifically when the l
 use round_mult::NonZeroPow2;
 
 fn f(data: &[u8]) {
-	// for this example, assume std::simd::u8x32 is used.
+	// for this example, assume we want to use u8x32 SIMD. We could do:
+	// type Simd = std::simd::u8x32;
+	// let lanes = NonZeroPow2::of::<Simd>();
+	// but to keep this example compiling on stable, we could also use:
 	let lanes = NonZeroPow2::v32();
 
 	let mut i = 0;

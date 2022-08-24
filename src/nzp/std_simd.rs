@@ -1,38 +1,49 @@
-use core::{ops::Shl, simd::{Simd, SimdElement, Mask, MaskElement, LaneCount}};
+use core::simd::{Simd, SimdElement, Mask, MaskElement, LaneCount};
 
-use crate::{NonZeroPow2, traits::{NonZeroable, Number}};
+use crate::{NonZeroPow2, traits::NonZeroable};
 
 mod private {
-    pub trait Sealed {}
+    use core::ops::Shl;
+
+    use crate::{traits::{NonZeroable, Number}, NonZeroPow2};
+
+    pub trait LanesMultNum : NonZeroable + Number + Shl<u32, Output=Self> {}
+
+    pub trait LanesMult {
+        fn lanes_mult<N : LanesMultNum>() -> NonZeroPow2<N>;
+    }
 }
 
 /// Gets the lanes multiplier from a SIMD type.
-pub trait LanesMult: private::Sealed {
+pub trait LanesMult: private::LanesMult {
     /// Gets the lanes multiplier from a SIMD type.
-    fn lanes_mult<N: NonZeroable + Number + Shl<u32, Output=N>>() -> NonZeroPow2<N>;
+    #[inline(always)]
+    fn lanes_mult<N: private::LanesMultNum>() -> NonZeroPow2<N> {
+        <Self as private::LanesMult>::lanes_mult()
+    }
 }
 
 macro_rules! impl_lanes_mult {
     ($($n:expr => $v:expr),* $(,)?) => {
         $(
-            impl<T: SimdElement> private::Sealed for Simd<T, $n> {}
-            impl<T: MaskElement> private::Sealed for Mask<T, $n> {}
-            impl private::Sealed for LaneCount<$n> {}
-            impl<T: SimdElement> LanesMult for Simd<T, $n> {
+            impl<T: SimdElement> LanesMult for Simd<T, $n> {}
+            impl<T: MaskElement> LanesMult for Mask<T, $n> {}
+            impl LanesMult for LaneCount<$n> {}
+            impl<T: SimdElement> private::LanesMult for Simd<T, $n> {
                 #[inline(always)]
-                fn lanes_mult<N: NonZeroable + Number + Shl<u32, Output=N>>() -> NonZeroPow2<N> {
+                fn lanes_mult<N: private::LanesMultNum>() -> NonZeroPow2<N> {
                     $v()
                 }
             }
-            impl<T: MaskElement> LanesMult for Mask<T, $n> {
+            impl<T: MaskElement> private::LanesMult for Mask<T, $n> {
                 #[inline(always)]
-                fn lanes_mult<N: NonZeroable + Number + Shl<u32, Output=N>>() -> NonZeroPow2<N> {
+                fn lanes_mult<N: private::LanesMultNum>() -> NonZeroPow2<N> {
                     $v()
                 }
             }
-            impl LanesMult for LaneCount<$n> {
+            impl private::LanesMult for LaneCount<$n> {
                 #[inline(always)]
-                fn lanes_mult<N: NonZeroable + Number + Shl<u32, Output=N>>() -> NonZeroPow2<N> {
+                fn lanes_mult<N: private::LanesMultNum>() -> NonZeroPow2<N> {
                     $v()
                 }
             }
@@ -50,8 +61,8 @@ impl_lanes_mult!(
 );
 
 
-impl<N: NonZeroable + Shl<u32, Output = N> + Number> NonZeroPow2<N> {
+impl<N: NonZeroable> NonZeroPow2<N> {
     /// Gets the multiplier for the given SIMD type.
     #[inline(always)]
-    pub fn of<T: LanesMult>() -> Self { T::lanes_mult() }
+    pub fn of<T: LanesMult>() -> Self where N: private::LanesMultNum { <T as LanesMult>::lanes_mult() }
 }

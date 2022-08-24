@@ -1,5 +1,8 @@
 //! [`NonZeroPow2`]
 
+#[cfg(nightly)]
+mod std_simd;
+
 use core::ops::Shl;
 
 use crate::traits::{NonZeroable, Number};

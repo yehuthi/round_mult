@@ -2,6 +2,8 @@
 #![no_std]
 #![deny(clippy::missing_inline_in_public_items, missing_docs)]
 
+#![cfg_attr(nightly, feature(portable_simd))]
+
 mod nzp;
 pub use nzp::NonZeroPow2;
 

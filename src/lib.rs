@@ -5,7 +5,7 @@
 #![cfg_attr(nightly, feature(portable_simd))]
 
 mod nzp;
-pub use nzp::NonZeroPow2;
+pub use nzp::{NonZeroPow2, LanesMult};
 
 pub mod traits;
 use traits::Multiplier;

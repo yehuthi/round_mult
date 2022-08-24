@@ -6,7 +6,9 @@ mod private {
     pub trait Sealed {}
 }
 
+/// Gets the lanes multiplier from a SIMD type.
 pub trait LanesMult: private::Sealed {
+    /// Gets the lanes multiplier from a SIMD type.
     fn lanes_mult<N: NonZeroable + Number + Shl<u32, Output=N>>() -> NonZeroPow2<N>;
 }
 

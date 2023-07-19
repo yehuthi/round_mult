@@ -1,22 +1,19 @@
 #![doc = include_str!("../README.md")]
 #![no_std]
 #![deny(clippy::missing_inline_in_public_items, missing_docs)]
-
 #![cfg_attr(nightly, feature(portable_simd))]
 
 mod nzp;
-pub use nzp::NonZeroPow2;
 #[cfg(nightly)]
 pub use nzp::LanesMult;
+pub use nzp::NonZeroPow2;
 
 pub mod traits;
 use traits::Multiplier;
 
 /// Rounds the number down.
 #[inline(always)]
-pub fn down<M: Multiplier>(value: M::Number, multiplier: M) -> M::Number {
-	multiplier.down(value)
-}
+pub fn down<M: Multiplier>(value: M::Number, multiplier: M) -> M::Number { multiplier.down(value) }
 
 /// Rounds the number up.
 ///
@@ -30,9 +27,10 @@ pub fn up<M: Multiplier>(value: M::Number, multiplier: M) -> Option<M::Number> {
 mod test {
 	use core::num::NonZeroU8;
 
-	use super::*;
 	use quickcheck::TestResult;
 	use quickcheck_macros::quickcheck;
+
+	use super::*;
 
 	#[quickcheck]
 	fn mult2_down_round_mult_is_identity(value: NonZeroPow2<u8>) -> bool {

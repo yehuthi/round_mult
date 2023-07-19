@@ -10,12 +10,12 @@ categories = ["algorithms", "concurrency", "mathematics", "rust-patterns", "no-s
 keywords = ["simd", "multiplier", "round", "rounding"]
 
 [dev-dependencies]
-criterion = "0.3.6"
+criterion = "0.5.1"
 quickcheck = "1.0.3"
 quickcheck_macros = "1.0.0"
 
 [build-dependencies]
-rustc_version = "0.2"
+rustc_version = "0.4"
 
 [[bench]]
 name = "bench"

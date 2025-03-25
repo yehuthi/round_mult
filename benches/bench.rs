@@ -36,7 +36,7 @@ pub fn bench_round_up(c: &mut Criterion) {
 
 	g.bench_function("std round up NZP", |b| {
 		b.iter(|| {
-			black_box(black_box(100usize).next_multiple_of(32))
+			black_box(black_box(100usize).checked_next_multiple_of(32))
 		});
 	});
 }

@@ -95,7 +95,7 @@ mod test {
 	}
 
 	#[test]
-	fn up_pow_2_no_change() {
+	fn up_12_4_identity() {
 		assert_eq!(
 			up(12_usize, NonZeroPow2::new(4).unwrap()).unwrap(),
 			12

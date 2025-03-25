@@ -101,4 +101,12 @@ mod test {
 			12
 		);
 	}
+
+	#[test]
+	fn down_12_4() {
+		assert_eq!(
+			down(12_usize, NonZeroPow2::new(4).unwrap()),
+			12
+		);
+	}
 }

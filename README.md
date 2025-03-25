@@ -5,10 +5,14 @@ A tiny library to round a number up or down to a multiplier.
 # Usage
 
 The library has two functions:
-- `round_mult::`[`up`]
+- `round_mult::`[`up`] (see note below)
 - `round_mult::`[`down`]
 
 They both take a value and a multiplier and round the value down or up to the multiplier respectively.
+
+> [!NOTE]
+> As of Rust 1.73.0, integer primitives have a built-in
+[`next_multiple_of`](https://doc.rust-lang.org/std/primitive.usize.html#method.next_multiple_of) method.
 
 ## Multiplier
 

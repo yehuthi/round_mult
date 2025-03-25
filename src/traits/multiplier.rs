@@ -97,10 +97,11 @@ where
 
 	#[inline(always)]
 	fn up(self, value: Self::Number) -> Option<Self::Number> {
-		if self.get() == value {
+		let downed = self.down(value);
+		if downed == value {
 			return Some(value);
 		}
-		self.down(value).checked_add(self.get())
+		downed.checked_add(self.get())
 	}
 }
 
